@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>K 线图形学习笔记</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="K 线形态导航">
+        <div class="brand-block">
+          <p class="eyebrow">KandleLine Tech</p>
+          <h1>K 线图形学习笔记</h1>
+        </div>
+
+        <label class="search-box">
+          <span>搜索形态</span>
+          <input id="searchInput" type="search" placeholder="名称、含义、场景" />
+        </label>
+
+        <button id="favoritesOnlyButton" class="favorite-toggle" type="button">
+          <span aria-hidden="true">☆</span>
+          <span>只看收藏</span>
+          <strong id="favoriteCount">0</strong>
+        </button>
+
+        <div class="filter-block">
+          <div class="section-title">分类</div>
+          <div id="categoryFilters" class="segmented" role="tablist"></div>
+        </div>
+
+        <div class="filter-block">
+          <div class="section-title">后续倾向</div>
+          <div id="biasFilters" class="segmented compact" role="tablist"></div>
+        </div>
+
+        <div class="filter-block">
+          <div class="section-title">颜色模式</div>
+          <div id="marketFilters" class="segmented compact" role="tablist"></div>
+          <p id="marketHint" class="sidebar-hint"></p>
+        </div>
+
+        <nav id="patternList" class="pattern-list" aria-label="形态列表"></nav>
+      </aside>
+
+      <main class="content-area">
+        <section class="top-strip" aria-label="当前形态摘要">
+          <div>
+            <p id="patternCategory" class="eyebrow"></p>
+            <div class="pattern-title-row">
+              <h2 id="patternTitle"></h2>
+              <button id="favoriteButton" class="favorite-button" type="button" title="收藏当前形态">
+                <span aria-hidden="true">☆</span>
+                <span class="sr-only">收藏当前形态</span>
+              </button>
+            </div>
+            <p id="patternSubtitle" class="subtitle"></p>
+          </div>
+          <div id="patternTags" class="tag-row"></div>
+        </section>
+
+        <section class="workspace-grid">
+          <article class="chart-panel" aria-label="标准 K 线图">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">标准图形</p>
+                <h3>手工绘制示意</h3>
+              </div>
+              <div class="panel-actions">
+                <span id="marketBadge" class="note-status"></span>
+                <button id="resetViewButton" class="icon-button" type="button" title="回到默认形态">
+                  <span aria-hidden="true">↺</span>
+                  <span class="sr-only">回到默认形态</span>
+                </button>
+              </div>
+            </div>
+            <div id="chartCanvas" class="chart-canvas"></div>
+            <div class="legend-row">
+              <span><i class="legend-up"></i><span id="legendUpText">阳线</span></span>
+              <span><i class="legend-down"></i><span id="legendDownText">阴线</span></span>
+              <span><i class="legend-neutral"></i>十字/小实体</span>
+            </div>
+          </article>
+
+          <article class="study-panel" aria-label="学习要点">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">学习卡片</p>
+                <h3 id="studyHeading"></h3>
+              </div>
+            </div>
+            <dl id="detailGrid" class="detail-grid"></dl>
+          </article>
+
+          <article class="note-panel" aria-label="个人笔记">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">个人笔记</p>
+                <h3>复盘与理解</h3>
+              </div>
+              <span id="noteStatus" class="note-status">本地保存</span>
+            </div>
+            <textarea id="personalNote" rows="8" placeholder="写下你对这个形态的理解、疑问或看到的真实案例。"></textarea>
+          </article>
+
+          <article class="compare-panel" aria-label="易混淆形态">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">对比提醒</p>
+                <h3>容易误判的地方</h3>
+              </div>
+            </div>
+            <div id="compareList" class="compare-list"></div>
+          </article>
+
+          <article class="case-panel" aria-label="实战案例">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">实战案例</p>
+                <h3>图片与复盘记录</h3>
+              </div>
+              <div class="tab-buttons" role="tablist" aria-label="实战案例视图">
+                <button class="tab-button active" type="button" data-case-tab="local">案例</button>
+                <button class="tab-button" type="button" data-case-tab="repo">协作</button>
+              </div>
+            </div>
+
+            <div id="caseLocalPanel" class="case-tab-panel">
+              <form id="caseForm" class="case-form">
+                <label class="upload-box">
+                  <input id="caseImageInput" type="file" accept="image/*" />
+                  <span id="caseUploadText">上传走势图截图</span>
+                </label>
+
+                <div class="case-fields">
+                  <label>
+                    <span>股票</span>
+                    <input id="caseStockInput" type="text" placeholder="例如：贵州茅台 600519" />
+                  </label>
+                  <label>
+                    <span>日期</span>
+                    <input id="caseDateInput" type="date" />
+                  </label>
+                  <label>
+                    <span>市场</span>
+                    <select id="caseMarketInput">
+                      <option value="A 股">A 股</option>
+                      <option value="美股">美股</option>
+                      <option value="其他">其他</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>结果</span>
+                    <select id="caseOutcomeInput">
+                      <option value="待观察">待观察</option>
+                      <option value="有效">有效</option>
+                      <option value="失败">失败</option>
+                      <option value="部分有效">部分有效</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label class="case-note-field">
+                  <span>复盘备注</span>
+                  <textarea id="caseNoteInput" rows="4" placeholder="记录趋势背景、确认信号、失效位置和后续 3/5/10 个交易日表现。"></textarea>
+                </label>
+
+                <button class="primary-button" type="submit">保存到本地案例</button>
+              </form>
+
+              <div id="caseList" class="case-list"></div>
+            </div>
+
+            <div id="caseRepoPanel" class="case-tab-panel hidden">
+              <div id="repoGuide" class="repo-guide"></div>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="./cases.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
